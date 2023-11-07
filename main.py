@@ -211,21 +211,19 @@ class Solve():
                 
         return -1, -1
 
-    def valid(self, row, column, n):
-        # checking every row
-        for x in range(GRID):
-            if main_grid[row][x].get() == str(n):
+    def valid(self, row, col, n):
+        for i in range(GRID):
+            if main_grid[row][i].get() == str(n):
                 return False
-        #checking every column
-        for x in range(GRID):
-            if main_grid[x][column].get() == str(n):
+            
+        for i in range(GRID):
+            if main_grid[i][col].get() == str(n):
                 return False
 
-        # checking the individual 3x3 boxes in the grid.   
-        secTopX, secTopY = 3 *int((row/3)), 3 *int((column/3))
-        for row in range(secTopX, secTopX+3):
-            for column in range(secTopY, secTopY+3):
-                if main_grid[row][column].get() == str(n):
+        sec_top_x, sec_top_y = 3*int((row/3)), 3*int((col/3))
+        for row in range(sec_top_x, sec_top_x+3):
+            for col in range(sec_top_y, sec_top_y+3):
+                if main_grid[row][col].get() == str(n):
                     return False
         
         return True
