@@ -1,4 +1,5 @@
 import tkinter as tk
+import random
 
 GRID = 9
 
@@ -11,14 +12,14 @@ main_grid = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
 class SudokuGrid(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title("Sudoku Solver")
+        self.title('Sudoku Solver')
 
         self.grid = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,16 +30,30 @@ class SudokuGrid(tk.Tk):
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
 
-        self.solved_msg, self.not_solved_msg, self.incorrect_msg = "Solved", "Not Solved", "Incorrect"
+        self.ans = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+        self.solved_msg, self.not_solved_msg, self.incorrect_msg = 'Solved', 'Not Solved', 'Incorrect'
         self.status = tk.StringVar()
 
         self.width, self.height = 270, 340
         self.geometry(f'{self.width}x{420}')
 
         self.create_grid()
+
+        self.new_grid_easy()
 
     def create_grid(self):
 
@@ -60,12 +75,12 @@ class SudokuGrid(tk.Tk):
                 self.grid[row][column].grid(row=row, column=column)
                 
 
-        tk.Label(self, text = "Generate New Grid", font = ('Helvetica 11 bold')).place(x = 60, y = 290)
+        tk.Label(self, text = 'Generate New Grid', font = ('Helvetica 11 bold')).place(x = 60, y = 290)
         tk.Button(self, text = 'Easy', command = self.new_grid_easy, bg = 'black', fg = 'white' ).place(x = 20, y = 320)
         tk.Button(self, text = 'Medium', command = self.new_grid_med, bg = 'black', fg = 'white').place(x = 103, y = 320)
         tk.Button(self, text = 'Hard', command = self.new_grid_hard, bg = 'black', fg = 'white').place(x = 210, y = 320)
         tk.Button(self, text = 'Check Solution', command = self.check, bg = 'black', fg = 'white').place(x = 85, y = 360)
-        tk.Label(self, textvariable = self.status, fg='grey', font = ('Helvetica 9 bold')).place(x = self.width/4-5, y = self.height+50)
+        tk.Label(self, textvariable = self.status, fg='grey', font = ('Helvetica 9 bold')).place(x = self.width/3.5, y = self.height+50)
 
     def worst_case(self, event):
         for row in range(GRID):
@@ -75,21 +90,146 @@ class SudokuGrid(tk.Tk):
                 if len(main_grid[row][col].get()) > 1 or main_grid[row][col].get() not in ['1','2','3','4','5','6','7','8','9']:
                     main_grid[row][col].set('')
 
-    def solve_sudoku(self):
-        pass
-
     def new_grid_easy(self):
-        pass
+        self.clear_grid()
+        self.randomize_top_row()
+        self.solve_grid()
+        self.save_grid()
+        self.hide_solution_easy()
+        self.status.set(f'Status: {self.not_solved_msg}')
 
     def new_grid_med(self):
-        pass
+        self.clear_grid()
+        self.randomize_top_row()
+        self.solve_grid()
+        self.save_grid()
+        self.hide_solution_med()
+        self.status.set(f'Status: {self.not_solved_msg}')
 
     def new_grid_hard(self):
-        pass
+        self.clear_grid()
+        self.randomize_top_row()
+        self.solve_grid()
+        self.save_grid()
+        self.hide_solution_hard()
+        self.status.set(f'Status: {self.not_solved_msg}')
 
     def check(self):
-        pass
+        if self.grid_correct():
+            self.status.set(f'Status: {self.solved_msg}')
+        else:
+            self.status.set(f'Status: {self.incorrect_msg}')
 
-if __name__ == "__main__":
+    def grid_correct(self):
+        for row in range(GRID):
+            for col in range(GRID):
+                if main_grid[row][col].get() != self.ans[row][col]:
+                    return False
+        return True
+
+    def clear_grid(self):
+        for row in range(GRID):
+            for col in range(GRID):
+                main_grid[row][col].set('')
+
+    def randomize_top_row(self):
+        numbs = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        randomize = random.sample(numbs, len(numbs))
+
+        for i in range(GRID):
+            main_grid[0][i].set(randomize[i])
+
+    def solve_grid(self):
+        solve = Solve()
+
+    def save_grid(self):
+        for row in range(GRID):
+            for col in range(GRID):
+                self.ans[row][col] = main_grid[row][col].get()
+
+    def hide_solution_easy(self):
+        cc = 63
+        for col in range(GRID):
+            for row in range(GRID):
+                r = random.randint(0, 100)
+                if r < cc:
+                    main_grid[row][col].set('')
+
+    def hide_solution_med(self):
+        cc = 77
+        for col in range(GRID):
+            for row in range(GRID):
+                r = random.randint(0, 100)
+                if r < cc:
+                    main_grid[row][col].set('')
+
+    def hide_solution_hard(self):
+        cc = 87
+        for col in range(GRID):
+            for row in range(GRID):
+                r = random.randint(0, 100)
+                if r < cc:
+                    main_grid[row][col].set('')
+
+
+class Solve():
+
+    def __init__(self):
+        self.set_all_zero()
+        self.game_solve()
+
+    def set_all_zero(self):
+        for row in range(GRID):
+            for col in range(GRID):
+                if main_grid[row][col].get() not in ['1','2','3','4','5','6','7','8','9']:
+                    main_grid[row][col].set(0)
+
+    def game_solve(self, i=0, j=0):
+        i, j =  self.load_cell(i, j)
+
+        if i == -1:
+            return True
+        for n in range(1, 10):
+            if self.valid(i, j, n):
+                main_grid[i][j].set(n)
+                if self.game_solve(i, j):
+                    return True
+                
+                main_grid[i][j].set(0)
+        return False
+    
+    def load_cell(self, i, j):
+        for row in range(i, GRID):
+            for col in range(j, GRID):
+                if main_grid[row][col].get() == '0':
+                    return row, col
+                
+        for row in range(0, GRID):
+            for col in range(0, GRID):
+                if main_grid[row][col].get() == '0':
+                    return row, col
+                
+        return -1, -1
+
+    def valid(self, row, column, n):
+        # checking every row
+        for x in range(GRID):
+            if main_grid[row][x].get() == str(n):
+                return False
+        #checking every column
+        for x in range(GRID):
+            if main_grid[x][column].get() == str(n):
+                return False
+
+        # checking the individual 3x3 boxes in the grid.   
+        secTopX, secTopY = 3 *int((row/3)), 3 *int((column/3))
+        for row in range(secTopX, secTopX+3):
+            for column in range(secTopY, secTopY+3):
+                if main_grid[row][column].get() == str(n):
+                    return False
+        
+        return True
+
+if __name__ == '__main__':
     app = SudokuGrid()
     app.mainloop()
