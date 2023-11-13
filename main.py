@@ -19,7 +19,7 @@ class SudokuGrid(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title('Sudoku Solver')
+        self.title('Sudoku')
 
         self.grid = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
